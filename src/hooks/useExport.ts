@@ -18,9 +18,9 @@ export const useExport = () => {
       allowTaint: false,
       foreignObjectRendering: false,
       removeContainer: false,
-      imageTimeout: 15000,
+      imageTimeout: 10000,
       onclone: (clonedDoc, clonedElement) => {
-        // Ensure background color is set in cloned document - be very aggressive
+        // Ensure background color is set in cloned document
         const rootElement = clonedDoc.getElementById(element.id) || clonedDoc.body.firstElementChild || clonedElement
         if (rootElement) {
           const rootHtml = rootElement as HTMLElement

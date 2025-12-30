@@ -46,31 +46,8 @@ export const Scene5Export: React.FC = () => {
     setExportProgress(0)
 
     try {
-      // Zoom out animation
-      setExportProgress(10)
-      await new Promise((resolve) => setTimeout(resolve, 300))
-
-      // Flash effect
-      setExportProgress(20)
-      const flash = document.createElement('div')
-      flash.className = 'fixed inset-0 bg-white z-50 pointer-events-none'
-      flash.style.opacity = '0'
-      document.body.appendChild(flash)
-
-      await new Promise((resolve) => {
-        flash.style.transition = 'opacity 0.3s'
-        flash.style.opacity = '0.8'
-        setTimeout(() => {
-          flash.style.opacity = '0'
-          setTimeout(() => {
-            document.body.removeChild(flash)
-            resolve(undefined)
-          }, 300)
-        }, 200)
-      })
-
-      // Get the frame element
-      setExportProgress(30)
+      // Get the frame element immediately
+      setExportProgress(15)
       const frameElement = frameRef.current.querySelector('#memory-frame') as HTMLElement
       if (!frameElement) {
         throw new Error('Frame element not found')
@@ -195,9 +172,10 @@ export const Scene5Export: React.FC = () => {
         }
       })
       
-      // Ensure fonts are loaded before export
+      // Ensure fonts are loaded before export (non-blocking)
       setExportProgress(50)
-      await document.fonts.ready
+      // Don't wait for fonts if they're already loading, proceed in parallel
+      const fontPromise = document.fonts.ready.catch(() => {})
       
       // Additional style fixes for specific elements
       setExportProgress(60)
@@ -242,9 +220,14 @@ export const Scene5Export: React.FC = () => {
       exportContainer.appendChild(clonedFrame)
       document.body.appendChild(exportContainer)
 
-      // Wait for rendering and ensure all styles are applied
+      // Wait for fonts to be ready and rendering to complete
+      setExportProgress(75)
+      await Promise.all([
+        fontPromise,
+        new Promise((resolve) => setTimeout(resolve, 200))
+      ])
+      
       setExportProgress(80)
-      await new Promise((resolve) => setTimeout(resolve, 500))
       
       // Force multiple reflows to ensure all styles are computed
       void exportContainer.offsetHeight
@@ -294,12 +277,15 @@ export const Scene5Export: React.FC = () => {
       exportContainer.style.opacity = '1'
       
       // Export with proper options
-      setExportProgress(90)
+      setExportProgress(85)
       const dataUrl = await exportToImage('export-container')
       
-      // Generate QR code (optional feature)
-      setExportProgress(95)
-      const qrDataUrl = await generateQRCode(dataUrl)
+      // Generate QR code in parallel with download prep
+      setExportProgress(92)
+      const [qrDataUrl] = await Promise.all([
+        generateQRCode(dataUrl).catch(() => null),
+        new Promise((resolve) => setTimeout(resolve, 100)) // Small delay for smooth progress
+      ])
       if (qrDataUrl) {
         setQrCodeUrl(qrDataUrl)
       }
@@ -310,7 +296,7 @@ export const Scene5Export: React.FC = () => {
       downloadImage(dataUrl, `once-again-12-${timestamp}.png`)
       
       // Small delay to show 100% before hiding
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await new Promise((resolve) => setTimeout(resolve, 200))
 
       // Restore export buttons visibility
       exportHideElements.forEach((el) => {
@@ -357,6 +343,7 @@ export const Scene5Export: React.FC = () => {
         {/* Frame */}
         <motion.div
           ref={frameRef}
+          className="relative"
           animate={{
             scale: isExporting ? 0.95 : 1,
           }}
@@ -371,6 +358,38 @@ export const Scene5Export: React.FC = () => {
             <WarmTone active={magicToggles.warmTone} />
             <LightLeak active={magicToggles.lightLeak} />
           </Frame>
+          
+          {/* Loading overlay on frame */}
+          {isExporting && (
+            <motion.div
+              className="absolute inset-0 bg-warm-burgundy-DEFAULT/80 backdrop-blur-sm rounded-sm flex items-center justify-center z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="text-center">
+                {/* Spinner */}
+                <motion.div
+                  className="w-16 h-16 border-4 border-warm-gold-DEFAULT border-t-transparent rounded-full mx-auto mb-4"
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    ease: 'linear',
+                  }}
+                />
+                <motion.p
+                  className="text-warm-gold-DEFAULT text-lg font-medium"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Creating your memory...
+                </motion.p>
+              </div>
+            </motion.div>
+          )}
         </motion.div>
 
         <AnimatePresence mode="wait">
