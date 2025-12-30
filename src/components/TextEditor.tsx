@@ -115,3 +115,5 @@ export const TextEditor: React.FC = () => {
   )
 }
 
+TextEditor.displayName = 'TextEditor'
+
