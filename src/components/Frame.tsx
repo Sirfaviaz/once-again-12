@@ -67,7 +67,8 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '200px',
+          minHeight: '300px',
+          height: 'auto',
           width: '100%',
           maxWidth: '100%',
           flex: '1 1 auto',
@@ -77,20 +78,16 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
         }}
       >
         {React.Children.map(children, (child) => {
-          if (!React.isValidElement(child)) return child
+          if (!React.isValidElement(child)) return null
           
           const componentName = (child.type as any)?.displayName || (child.type as any)?.name || ''
           
-          // Don't render TextEditor or magic effects here
-          if (componentName === 'TextEditor' || 
-              componentName === 'FilmGrain' || 
-              componentName === 'WarmTone' || 
-              componentName === 'LightLeak') {
-            return null
+          // Only render PhotoEditor here - filter out everything else
+          if (componentName === 'PhotoEditor') {
+            return child
           }
           
-          // Render PhotoEditor
-          return child
+          return null
         })}
       </div>
 

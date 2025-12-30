@@ -146,12 +146,13 @@ export const PhotoEditor: React.FC = () => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center"
+      className="relative w-full flex items-center justify-center"
       style={{
         width: '100%',
         maxWidth: '100%',
+        minHeight: '300px',
         height: '100%',
-        minHeight: '200px',
+        flex: '1 1 auto',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -313,4 +314,6 @@ export const PhotoEditor: React.FC = () => {
     </div>
   )
 }
+
+PhotoEditor.displayName = 'PhotoEditor'
 
