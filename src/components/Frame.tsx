@@ -31,6 +31,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
         flexDirection: 'column',
         width: '100%',
         maxWidth: '100%',
+        minHeight: '400px',
         boxSizing: 'border-box',
       }}
     >
@@ -60,13 +61,13 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
 
       {/* Main content area (photo) - takes remaining space */}
       <div 
-        className="flex-1 flex items-center justify-center min-h-0 relative overflow-hidden w-full"
+        className="flex-1 flex items-center justify-center relative overflow-hidden w-full"
         style={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: 0,
+          minHeight: '200px',
           width: '100%',
           maxWidth: '100%',
           flex: '1 1 auto',

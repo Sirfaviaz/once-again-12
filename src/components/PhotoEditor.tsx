@@ -146,15 +146,15 @@ export const PhotoEditor: React.FC = () => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center min-h-0"
+      className="relative w-full h-full flex items-center justify-center"
       style={{
         width: '100%',
         maxWidth: '100%',
         height: '100%',
+        minHeight: '200px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: 0,
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
