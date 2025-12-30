@@ -147,6 +147,15 @@ export const PhotoEditor: React.FC = () => {
     <div 
       ref={containerRef}
       className="relative w-full h-full flex items-center justify-center min-h-0"
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 0,
+        position: 'relative',
+      }}
     >
       <motion.div
         className="relative cursor-move select-none"
@@ -186,6 +195,10 @@ export const PhotoEditor: React.FC = () => {
             transition: 'filter 0.2s',
             maxWidth: '100%',
             maxHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+            display: 'block',
           }}
           onLoad={() => {
             // Auto-fit image to fill frame horizontally when first loaded

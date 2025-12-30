@@ -27,6 +27,8 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
       style={{
         boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
         backgroundColor: '#F5F1E8', // Explicit inline style for export
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* Header */}
@@ -46,7 +48,18 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
       </div>
 
       {/* Main content area (photo) - takes remaining space */}
-      <div className="flex-1 flex items-center justify-center min-h-0 relative overflow-hidden">
+      <div 
+        className="flex-1 flex items-center justify-center min-h-0 relative overflow-hidden"
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 0,
+          width: '100%',
+          flex: '1 1 auto',
+        }}
+      >
         {React.Children.map(children, (child) => {
           if (!React.isValidElement(child)) return child
           
@@ -66,7 +79,13 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
       </div>
 
       {/* Footer area for TextEditor */}
-      <div className="flex-shrink-0">
+      <div 
+        className="flex-shrink-0"
+        style={{
+          flexShrink: 0,
+          width: '100%',
+        }}
+      >
         {React.Children.map(children, (child) => {
           if (!React.isValidElement(child)) return null
           
