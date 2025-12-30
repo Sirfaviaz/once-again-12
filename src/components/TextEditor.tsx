@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useApp } from '../context/AppContext'
 import { fonts } from '../utils/fonts'
 import { typewriter, fadeIn } from '../utils/animations'

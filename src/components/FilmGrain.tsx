@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { fadeIn, fadeOut } from '../utils/animations'
+import { fadeIn } from '../utils/animations'
 
 interface FilmGrainProps {
   active: boolean

@@ -4,7 +4,7 @@ import { Volume2, VolumeX } from 'lucide-react'
 
 export const AudioToggle: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [volume, setVolume] = useState(0.3)
+  const [volume] = useState(0.3)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {

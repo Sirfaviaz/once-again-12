@@ -204,7 +204,6 @@ export const Scene5Export: React.FC = () => {
       const allElements = clonedFrame.querySelectorAll('*')
       allElements.forEach((el) => {
         const htmlEl = el as HTMLElement
-        const sourceEl = frameElement.querySelector(`[data-export-id="${htmlEl.getAttribute('data-export-id')}"]`) as HTMLElement
         
         // If element has paper-DEFAULT background class, ensure color is set
         if (htmlEl.classList.contains('bg-paper-DEFAULT') || 
