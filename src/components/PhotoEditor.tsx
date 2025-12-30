@@ -149,12 +149,15 @@ export const PhotoEditor: React.FC = () => {
       className="relative w-full h-full flex items-center justify-center min-h-0"
       style={{
         width: '100%',
+        maxWidth: '100%',
         height: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 0,
         position: 'relative',
+        overflow: 'hidden',
+        boxSizing: 'border-box',
       }}
     >
       <motion.div
@@ -172,6 +175,10 @@ export const PhotoEditor: React.FC = () => {
           x: frameSettings.photoX,
           y: frameSettings.photoY,
           touchAction: 'none',
+          maxWidth: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
         animate={{
           x: frameSettings.photoX,
@@ -199,6 +206,7 @@ export const PhotoEditor: React.FC = () => {
             height: 'auto',
             objectFit: 'contain',
             display: 'block',
+            boxSizing: 'border-box',
           }}
           onLoad={() => {
             // Auto-fit image to fill frame horizontally when first loaded

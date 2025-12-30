@@ -37,7 +37,16 @@ export const TextEditor: React.FC = () => {
   }
 
   return (
-    <div className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-warm-brown-light/20 flex-shrink-0">
+    <div 
+      className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-warm-brown-light/20 flex-shrink-0 w-full"
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        display: 'block',
+        clear: 'both',
+        boxSizing: 'border-box',
+      }}
+    >
       <motion.div
         className="relative"
         variants={hasAnimated && !frameSettings.text ? typewriter : fadeIn}

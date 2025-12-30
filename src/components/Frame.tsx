@@ -29,10 +29,21 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
         backgroundColor: '#F5F1E8', // Explicit inline style for export
         display: 'flex',
         flexDirection: 'column',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
       }}
     >
       {/* Header */}
-      <div className="text-center mb-3 sm:mb-4 md:mb-6 flex-shrink-0">
+      <div 
+        className="text-center mb-3 sm:mb-4 md:mb-6 flex-shrink-0 w-full"
+        style={{
+          width: '100%',
+          maxWidth: '100%',
+          display: 'block',
+          boxSizing: 'border-box',
+        }}
+      >
         <h1 
           className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-warm-burgundy-DEFAULT mb-1 sm:mb-2 leading-tight"
           style={{ fontFamily: "'Playfair Display', serif" }}
@@ -49,7 +60,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
 
       {/* Main content area (photo) - takes remaining space */}
       <div 
-        className="flex-1 flex items-center justify-center min-h-0 relative overflow-hidden"
+        className="flex-1 flex items-center justify-center min-h-0 relative overflow-hidden w-full"
         style={{
           display: 'flex',
           flexDirection: 'row',
@@ -57,7 +68,11 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
           justifyContent: 'center',
           minHeight: 0,
           width: '100%',
+          maxWidth: '100%',
           flex: '1 1 auto',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+          position: 'relative',
         }}
       >
         {React.Children.map(children, (child) => {
@@ -80,10 +95,13 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
 
       {/* Footer area for TextEditor */}
       <div 
-        className="flex-shrink-0"
+        className="flex-shrink-0 w-full"
         style={{
           flexShrink: 0,
           width: '100%',
+          maxWidth: '100%',
+          clear: 'both',
+          display: 'block',
         }}
       >
         {React.Children.map(children, (child) => {
