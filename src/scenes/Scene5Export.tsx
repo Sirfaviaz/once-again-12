@@ -353,10 +353,10 @@ export const Scene5Export: React.FC = () => {
             <PhotoEditor />
             <TextEditor />
 
-            {/* Magic effects */}
+            {/* Magic effects - always enabled */}
             <FilmGrain active={magicToggles.filmGrain} />
             <WarmTone active={magicToggles.warmTone} />
-            <LightLeak active={magicToggles.lightLeak} />
+            <LightLeak active={false} onComplete={() => {}} />
           </Frame>
           
           {/* Loading overlay on frame */}

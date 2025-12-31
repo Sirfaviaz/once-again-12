@@ -10,7 +10,7 @@ import { LightLeak } from '../components/LightLeak'
 import { fadeIn } from '../utils/animations'
 
 export const Scene3FrameExperience: React.FC = () => {
-  const { photo, magicToggles, toggleMagic, setCurrentScene } = useApp()
+  const { photo, magicToggles, setCurrentScene } = useApp()
 
   if (!photo) {
     return null
@@ -35,29 +35,21 @@ export const Scene3FrameExperience: React.FC = () => {
           {/* Text editor */}
           <TextEditor />
 
-          {/* Magic effects */}
+          {/* Magic effects - always enabled */}
           <FilmGrain active={magicToggles.filmGrain} />
           <WarmTone active={magicToggles.warmTone} />
-          <LightLeak 
-            active={magicToggles.lightLeak} 
-            onComplete={() => {
-              // Reset light leak toggle after animation
-              if (magicToggles.lightLeak) {
-                toggleMagic('lightLeak')
-              }
-            }}
-          />
+          <LightLeak active={false} onComplete={() => {}} />
         </Frame>
 
-        {/* Next button */}
+        {/* Create Memory button */}
         <motion.button
-          onClick={() => setCurrentScene('magic')}
-          className="mt-6 w-full md:w-auto md:mx-auto block px-8 py-3 bg-warm-gold-DEFAULT text-warm-burgundy-DEFAULT font-semibold rounded-full min-h-[44px]"
+          onClick={() => setCurrentScene('export')}
+          className="mt-6 w-full md:w-auto md:mx-auto block px-12 py-4 bg-warm-gold-DEFAULT text-warm-burgundy-DEFAULT font-bold text-xl rounded-full shadow-lg min-h-[44px]"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label="Add magic touches to your memory"
+          aria-label="Create your memory"
         >
-          Add Magic Touches
+          Create Memory
         </motion.button>
       </div>
     </motion.div>

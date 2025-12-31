@@ -38,9 +38,9 @@ const defaultFrameSettings: FrameSettings = {
 }
 
 const defaultMagicToggles: MagicToggles = {
-  filmGrain: false,
-  warmTone: false,
-  lightLeak: false,
+  filmGrain: true,
+  warmTone: true,
+  lightLeak: false, // Light leak is one-time effect, keep false
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -63,7 +63,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setCurrentScene('intro')
     setPhoto(null)
     setFrameSettings(defaultFrameSettings)
-    setMagicToggles(defaultMagicToggles)
+    // Keep effects enabled by default
+    setMagicToggles({
+      filmGrain: true,
+      warmTone: true,
+      lightLeak: false,
+    })
   }, [])
 
   return (
