@@ -19,7 +19,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, magicToggles, reset, currentScene } = useApp()
+  const { photo, magicToggles } = useApp()
   const { exportToImage, downloadImage } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -318,24 +318,10 @@ export const Scene5Export: React.FC = () => {
   }
 
   const handleStartOver = () => {
-    // Reset all export states first
-    setIsExporting(false)
-    setIsSuccess(false)
-    setShowConfetti(false)
-    setExportProgress(0)
-    setCurrentQuote(0)
-    // Reset the app state - this already sets scene to 'intro'
-    reset()
+    // Full page reload to ensure clean state and return to landing page
+    window.location.reload()
   }
 
-  // Only return null if we're not transitioning away
-  // This prevents empty page during navigation
-  if (!photo && currentScene === 'export') {
-    // If no photo and still on export scene, navigate to intro
-    reset()
-    return null
-  }
-  
   if (!photo) {
     return null
   }
