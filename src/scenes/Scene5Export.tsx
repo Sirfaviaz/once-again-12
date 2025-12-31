@@ -324,10 +324,12 @@ export const Scene5Export: React.FC = () => {
     setShowConfetti(false)
     setExportProgress(0)
     setCurrentQuote(0)
-    // Then reset the app state and navigate to intro
+    // Reset the app state first
     reset()
-    // Ensure we're on intro scene
-    setCurrentScene('intro')
+    // Small delay to ensure state is reset, then navigate to intro
+    setTimeout(() => {
+      setCurrentScene('intro')
+    }, 100)
   }
 
   if (!photo) {
@@ -488,15 +490,64 @@ export const Scene5Export: React.FC = () => {
 
               <motion.button
                 onClick={handleStartOver}
-                className="px-8 py-3 bg-warm-burgundy-light text-warm-gold-DEFAULT font-semibold rounded-full min-h-[44px]"
-                whileHover={{ scale: 1.05 }}
+                className="relative px-12 py-4 bg-warm-burgundy-light text-warm-gold-DEFAULT font-bold text-lg rounded-full shadow-2xl min-h-[44px] overflow-hidden group"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ 
+                  opacity: 1, 
+                  scale: [1, 1.05, 1],
+                  boxShadow: [
+                    '0 10px 30px rgba(74, 47, 47, 0.4)',
+                    '0 15px 40px rgba(74, 47, 47, 0.6)',
+                    '0 10px 30px rgba(74, 47, 47, 0.4)',
+                  ],
+                }}
+                transition={{ 
+                  opacity: { delay: 0.7, duration: 0.4 },
+                  scale: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  },
+                  boxShadow: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  },
+                }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
                 aria-label="Create another memory"
               >
-                Create Another Memory
+                {/* Animated background glow */}
+                <motion.div
+                  className="absolute inset-0 bg-warm-gold-DEFAULT/30 rounded-full opacity-0 group-hover:opacity-50 blur-xl"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0, 0.3, 0],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
+                
+                {/* Shimmer effect */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                  animate={{
+                    x: ['-100%', '200%'],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: 'linear',
+                    repeatDelay: 1.5,
+                  }}
+                />
+                
+                {/* Button text */}
+                <span className="relative z-10">Create Another Memory</span>
               </motion.button>
             </motion.div>
           )}
