@@ -4,9 +4,6 @@ import { useApp } from '../context/AppContext'
 import { Frame } from '../components/Frame'
 import { PhotoEditor } from '../components/PhotoEditor'
 import { TextEditor } from '../components/TextEditor'
-import { FilmGrain } from '../components/FilmGrain'
-import { WarmTone } from '../components/WarmTone'
-import { LightLeak } from '../components/LightLeak'
 import { useExport } from '../hooks/useExport'
 import { fadeIn, checkmarkDraw, scaleIn } from '../utils/animations'
 import { Confetti } from '../components/Confetti'
@@ -19,7 +16,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, magicToggles } = useApp()
+  const { photo } = useApp()
   const { exportToImage, downloadImage } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -353,10 +350,7 @@ export const Scene5Export: React.FC = () => {
             <PhotoEditor />
             <TextEditor />
 
-            {/* Magic effects - always enabled */}
-            <FilmGrain active={magicToggles.filmGrain} />
-            <WarmTone active={magicToggles.warmTone} />
-            <LightLeak active={false} onComplete={() => {}} />
+            {/* Magic effects - disabled */}
           </Frame>
           
           {/* Loading overlay on frame */}

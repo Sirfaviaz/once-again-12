@@ -4,13 +4,10 @@ import { useApp } from '../context/AppContext'
 import { Frame } from '../components/Frame'
 import { PhotoEditor } from '../components/PhotoEditor'
 import { TextEditor } from '../components/TextEditor'
-import { FilmGrain } from '../components/FilmGrain'
-import { WarmTone } from '../components/WarmTone'
-import { LightLeak } from '../components/LightLeak'
 import { fadeIn } from '../utils/animations'
 
 export const Scene3FrameExperience: React.FC = () => {
-  const { photo, magicToggles, setCurrentScene } = useApp()
+  const { photo, setCurrentScene } = useApp()
 
   if (!photo) {
     return null
@@ -35,10 +32,7 @@ export const Scene3FrameExperience: React.FC = () => {
           {/* Text editor */}
           <TextEditor />
 
-          {/* Magic effects - always enabled */}
-          <FilmGrain active={magicToggles.filmGrain} />
-          <WarmTone active={magicToggles.warmTone} />
-          <LightLeak active={false} onComplete={() => {}} />
+          {/* Magic effects - disabled */}
         </Frame>
 
         {/* Create Memory button */}
