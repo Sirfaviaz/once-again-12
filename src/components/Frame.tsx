@@ -11,7 +11,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
     <motion.div
       id="memory-frame"
       className={`
-        relative bg-paper-DEFAULT paper-texture
+        relative bg-paper-DEFAULT
         border border-warm-brown-light/30
         rounded-sm shadow-2xl
         p-4 sm:p-6 md:p-8 lg:p-12
@@ -25,7 +25,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
       style={{
-        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5)',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
         backgroundColor: '#F5F1E8', // Explicit inline style for export
         display: 'flex',
         flexDirection: 'column',
