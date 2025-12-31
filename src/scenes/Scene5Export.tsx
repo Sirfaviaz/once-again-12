@@ -72,8 +72,12 @@ export const Scene5Export: React.FC = () => {
       // Create export container with proper styling (completely hidden)
       const exportContainer = document.createElement('div')
       exportContainer.id = 'export-container'
-      exportContainer.style.display = 'none' // Completely hide - html2canvas works on clone
-      exportContainer.style.position = 'absolute'
+      exportContainer.style.position = 'fixed'
+      exportContainer.style.left = '-99999px' // Far off-screen but still in DOM
+      exportContainer.style.top = '0'
+      exportContainer.style.opacity = '0'
+      exportContainer.style.pointerEvents = 'none'
+      exportContainer.style.zIndex = '-9999'
       exportContainer.style.width = `${frameElement.offsetWidth}px`
       exportContainer.style.height = `${frameElement.offsetHeight}px`
       exportContainer.style.backgroundColor = '#F5F1E8'
