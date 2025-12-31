@@ -75,6 +75,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
           overflow: 'hidden',
           boxSizing: 'border-box',
           position: 'relative',
+          backgroundColor: 'transparent',
         }}
       >
         {React.Children.map(children, (child) => {

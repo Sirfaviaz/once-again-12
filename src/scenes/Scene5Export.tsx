@@ -194,6 +194,20 @@ export const Scene5Export: React.FC = () => {
           htmlEl.style.backgroundColor = '#F5F1E8'
         }
         
+        // Ensure photo container divs have transparent background (not white)
+        if (htmlEl.tagName === 'DIV' && 
+            (htmlEl.classList.contains('flex-1') || 
+             htmlEl.classList.contains('relative') && htmlEl.querySelector('img'))) {
+          // Check if this is a photo container (has img child or is the photo area)
+          const hasImage = htmlEl.querySelector('img')
+          if (hasImage || htmlEl.id === 'memory-frame') {
+            // Only set transparent if it's not the main frame
+            if (htmlEl.id !== 'memory-frame') {
+              htmlEl.style.backgroundColor = 'transparent'
+            }
+          }
+        }
+        
         // Ensure text colors are preserved
         if (htmlEl.classList.contains('text-warm-burgundy-DEFAULT')) {
           htmlEl.style.color = '#2D1B1E'

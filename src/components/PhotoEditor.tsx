@@ -159,6 +159,7 @@ export const PhotoEditor: React.FC = () => {
         position: 'relative',
         overflow: 'hidden',
         boxSizing: 'border-box',
+        backgroundColor: 'transparent',
       }}
     >
       <motion.div
