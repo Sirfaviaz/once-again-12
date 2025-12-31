@@ -71,21 +71,22 @@ export const Scene5Export: React.FC = () => {
         (el as HTMLElement).style.display = 'none'
       })
 
-      // Create export container with proper styling
+      // Create export container with proper styling (completely hidden)
       const exportContainer = document.createElement('div')
       exportContainer.id = 'export-container'
-      exportContainer.style.position = 'fixed'
-      exportContainer.style.left = '0'
-      exportContainer.style.top = '0'
+      exportContainer.style.position = 'absolute'
+      exportContainer.style.left = '-99999px' // Move far off-screen
+      exportContainer.style.top = '-99999px' // Move far off-screen
       exportContainer.style.width = `${frameElement.offsetWidth}px`
       exportContainer.style.height = `${frameElement.offsetHeight}px`
-      // Set background color multiple ways to ensure it's captured
-      exportContainer.setAttribute('style', 
-        `position: fixed; left: 0; top: 0; width: ${frameElement.offsetWidth}px; height: ${frameElement.offsetHeight}px; background-color: #F5F1E8 !important; z-index: 9999; overflow: hidden;`
-      )
       exportContainer.style.backgroundColor = '#F5F1E8'
-      exportContainer.style.zIndex = '9999'
+      exportContainer.style.zIndex = '-9999'
       exportContainer.style.overflow = 'hidden'
+      exportContainer.style.visibility = 'hidden'
+      exportContainer.style.opacity = '0'
+      exportContainer.style.pointerEvents = 'none'
+      exportContainer.style.clip = 'rect(0, 0, 0, 0)'
+      exportContainer.style.clipPath = 'inset(100%)'
       
       // Clone the frame with all styles and content
       const clonedFrame = frameElement.cloneNode(true) as HTMLElement
@@ -283,10 +284,8 @@ export const Scene5Export: React.FC = () => {
         clonedFrame.style.setProperty('background-color', '#F5F1E8', 'important')
       }
       
-      // Make sure container is visible and has background
-      exportContainer.style.display = 'block'
-      exportContainer.style.visibility = 'visible'
-      exportContainer.style.opacity = '1'
+      // Keep container hidden - html2canvas can capture hidden elements
+      // Don't make it visible to avoid showing preview on screen
       
       // Export with proper options
       setExportProgress(85)
