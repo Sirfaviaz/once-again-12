@@ -187,11 +187,90 @@ export const Scene5Export: React.FC = () => {
       const allElements = clonedFrame.querySelectorAll('*')
       allElements.forEach((el) => {
         const htmlEl = el as HTMLElement
+        const computed = window.getComputedStyle(htmlEl)
         
         // Remove ALL filters from images to prevent whitish tint
         if (htmlEl.tagName === 'IMG') {
           htmlEl.style.filter = 'none'
           htmlEl.style.removeProperty('filter')
+        }
+        
+        // CRITICAL: Remove any white/light overlays that might be on top of the image
+        // Check if element is positioned absolutely/fixed and might be an overlay
+        const position = computed.position
+        const bgColor = computed.backgroundColor
+        const opacity = parseFloat(computed.opacity)
+        
+        // If element is absolutely/fixed positioned and has white/light background, make it transparent
+        if ((position === 'absolute' || position === 'fixed') && 
+            htmlEl.tagName !== 'IMG' && 
+            !htmlEl.id.includes('memory-frame')) {
+          // Check if background is white or very light
+          const rgbMatch = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+          if (rgbMatch) {
+            const r = parseInt(rgbMatch[1])
+            const g = parseInt(rgbMatch[2])
+            const b = parseInt(rgbMatch[3])
+            // If it's white/very light (RGB > 240) and has opacity, it might be an overlay
+            if (r > 240 && g > 240 && b > 240 && opacity > 0.1) {
+              // Check if it's positioned over the image area (has inset or covers image)
+              const top = computed.top
+              const left = computed.left
+              const right = computed.right
+              const bottom = computed.bottom
+              if ((top === '0px' || left === '0px' || right === '0px' || bottom === '0px') ||
+                  htmlEl.classList.contains('inset-0') ||
+                  htmlEl.style.top === '0px' || htmlEl.style.left === '0px') {
+                // This is likely an overlay - hide it
+                htmlEl.style.display = 'none'
+                htmlEl.style.visibility = 'hidden'
+                htmlEl.style.opacity = '0'
+              }
+            }
+          }
+        }
+        
+        // Remove backdrop-blur which can create whitish appearance
+        if (computed.backdropFilter !== 'none' || htmlEl.classList.contains('backdrop-blur')) {
+          htmlEl.style.backdropFilter = 'none'
+          htmlEl.style.removeProperty('backdrop-filter')
+        }
+        
+        // Remove any high z-index overlays that might be on top (except the frame itself)
+        const zIndex = computed.zIndex
+        if (zIndex !== 'auto' && parseInt(zIndex) > 10 && htmlEl.id !== 'memory-frame') {
+          // Check if it's positioned and might be an overlay
+          if (position === 'absolute' || position === 'fixed' || position === 'relative') {
+            // If it has a light/white background, it's likely an unwanted overlay
+            const rgbMatch = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+            if (rgbMatch) {
+              const r = parseInt(rgbMatch[1])
+              const g = parseInt(rgbMatch[2])
+              const b = parseInt(rgbMatch[3])
+              if (r > 200 && g > 200 && b > 200) {
+                // Hide light overlays with high z-index
+                htmlEl.style.display = 'none'
+                htmlEl.style.visibility = 'hidden'
+              }
+            }
+          }
+        }
+        
+        // Remove any motion.div wrappers that framer-motion might have added
+        if (htmlEl.classList.contains('framer-motion') || 
+            htmlEl.getAttribute('data-framer-name') ||
+            (htmlEl.tagName === 'DIV' && htmlEl.children.length === 1 && htmlEl.querySelector('img'))) {
+          // Check if this wrapper has a background that might show
+          const wrapperBg = computed.backgroundColor
+          const wrapperRgbMatch = wrapperBg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+          if (wrapperRgbMatch) {
+            const r = parseInt(wrapperRgbMatch[1])
+            const g = parseInt(wrapperRgbMatch[2])
+            const b = parseInt(wrapperRgbMatch[3])
+            if (r > 240 && g > 240 && b > 240) {
+              htmlEl.style.backgroundColor = 'transparent'
+            }
+          }
         }
         
         // If element has paper-DEFAULT background class, ensure color is set
@@ -229,6 +308,35 @@ export const Scene5Export: React.FC = () => {
       // Copy all images and ensure they're loaded
       setExportProgress(70)
       const images = clonedFrame.querySelectorAll('img')
+      
+      // CRITICAL: Ensure all parent containers of images have transparent backgrounds
+      images.forEach((img) => {
+        let parent = img.parentElement
+        while (parent && parent !== clonedFrame) {
+          const parentComputed = window.getComputedStyle(parent)
+          const parentBg = parentComputed.backgroundColor
+          const parentRgbMatch = parentBg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+          
+          if (parentRgbMatch) {
+            const r = parseInt(parentRgbMatch[1])
+            const g = parseInt(parentRgbMatch[2])
+            const b = parseInt(parentRgbMatch[3])
+            // If parent has white/very light background, make it transparent
+            if (r > 240 && g > 240 && b > 240) {
+              (parent as HTMLElement).style.backgroundColor = 'transparent'
+            }
+          }
+          
+          // Also check inline styles
+          const inlineBg = (parent as HTMLElement).style.backgroundColor
+          if (inlineBg && (inlineBg.includes('255') || inlineBg.includes('white') || inlineBg.includes('#fff'))) {
+            (parent as HTMLElement).style.backgroundColor = 'transparent'
+          }
+          
+          parent = parent.parentElement
+        }
+      })
+      
       await Promise.all(
         Array.from(images).map((img) => {
           return new Promise<void>((resolve) => {
