@@ -39,6 +39,18 @@ export const Scene5Export: React.FC = () => {
     }
   }, [isExporting])
 
+  // Auto-start export when component mounts
+  useEffect(() => {
+    if (frameRef.current && !isExporting && !isSuccess) {
+      // Small delay to ensure frame is rendered
+      const timer = setTimeout(() => {
+        handleExport()
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
+
   const handleExport = async () => {
     if (!frameRef.current) return
 
@@ -403,26 +415,6 @@ export const Scene5Export: React.FC = () => {
         </motion.div>
 
         <AnimatePresence mode="wait">
-          {!isExporting && !isSuccess && (
-            <motion.div
-              key="export-button"
-              className="mt-6 flex flex-col gap-4 items-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
-              <motion.button
-                onClick={handleExport}
-                className="px-12 py-4 bg-warm-gold-DEFAULT text-warm-burgundy-DEFAULT font-bold text-xl rounded-full shadow-lg min-h-[44px]"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Export your memory"
-              >
-                Create Memory
-              </motion.button>
-            </motion.div>
-          )}
-
           {isExporting && (
             <motion.div
               key="loading"
