@@ -5,7 +5,6 @@ import { RotateCcw } from 'lucide-react'
 
 export const PhotoEditor: React.FC = () => {
   const { photo, frameSettings, updateFrameSettings } = useApp()
-  const [isDragging, setIsDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
   const [dragConstraints, setDragConstraints] = useState({ left: 0, right: 0, top: 0, bottom: 0 })
@@ -96,11 +95,11 @@ export const PhotoEditor: React.FC = () => {
   }
 
   const handleDragStart = () => {
-    setIsDragging(true)
+    // Drag started
   }
 
   const handleDragEnd = () => {
-    setIsDragging(false)
+    // Drag ended
   }
 
 
@@ -200,8 +199,6 @@ export const PhotoEditor: React.FC = () => {
           className="w-auto h-auto object-contain"
           draggable={false}
           style={{
-            filter: isDragging ? 'brightness(0.95)' : 'brightness(1)',
-            transition: 'filter 0.2s',
             maxWidth: '100%',
             maxHeight: '100%',
             width: 'auto',

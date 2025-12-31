@@ -34,6 +34,12 @@ export const useExport = () => {
           allElements.forEach((clonedEl) => {
             const htmlEl = clonedEl as HTMLElement
             
+            // Remove ALL filters from images to prevent whitish tint
+            if (htmlEl.tagName === 'IMG') {
+              htmlEl.style.filter = 'none'
+              htmlEl.style.removeProperty('filter')
+            }
+            
             // Set background color for paper elements - use cssText for maximum override
             if (htmlEl.classList.contains('bg-paper-DEFAULT') || 
                 htmlEl.classList.contains('paper-texture') ||

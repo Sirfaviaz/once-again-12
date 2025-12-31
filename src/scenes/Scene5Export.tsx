@@ -188,6 +188,12 @@ export const Scene5Export: React.FC = () => {
       allElements.forEach((el) => {
         const htmlEl = el as HTMLElement
         
+        // Remove ALL filters from images to prevent whitish tint
+        if (htmlEl.tagName === 'IMG') {
+          htmlEl.style.filter = 'none'
+          htmlEl.style.removeProperty('filter')
+        }
+        
         // If element has paper-DEFAULT background class, ensure color is set
         if (htmlEl.classList.contains('bg-paper-DEFAULT') || 
             htmlEl.classList.contains('paper-texture')) {
