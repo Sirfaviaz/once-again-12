@@ -133,6 +133,16 @@ export const Scene2PhotoUpload: React.FC = () => {
                 </motion.button>
               </div>
             </motion.div>
+
+            {/* Privacy notice */}
+            <motion.p
+              className="text-sm text-warm-brown-light/80 mt-6 text-center max-w-md mx-auto"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              🔒 Your privacy matters: Photos are processed entirely on your device and never uploaded to any server.
+            </motion.p>
           </motion.div>
         ) : (
           <motion.div

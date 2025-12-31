@@ -124,6 +124,16 @@ export const Scene1Intro: React.FC = () => {
           {/* Button text */}
           <span className="relative z-10">Create Your Memory</span>
         </motion.button>
+
+        {/* Privacy notice */}
+        <motion.p
+          className="text-sm text-warm-brown-light/80 mt-8 max-w-md mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          🔒 Your photos never leave your device. Everything happens locally on your phone.
+        </motion.p>
       </div>
     </motion.div>
   )
