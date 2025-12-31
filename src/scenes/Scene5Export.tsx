@@ -145,6 +145,19 @@ export const Scene5Export: React.FC = () => {
         const clonedEl = clonedElements[index] as HTMLElement
         if (clonedEl && sourceEl instanceof HTMLElement) {
           copyAllStyles(sourceEl, clonedEl)
+          
+          // CRITICAL: Explicitly remove filters from all cloned elements
+          const sourceComputed = window.getComputedStyle(sourceEl)
+          if (sourceComputed.filter && sourceComputed.filter !== 'none') {
+            clonedEl.style.filter = 'none'
+            clonedEl.style.removeProperty('filter')
+          }
+          
+          // Also remove backdrop-filter
+          if (sourceComputed.backdropFilter && sourceComputed.backdropFilter !== 'none') {
+            clonedEl.style.backdropFilter = 'none'
+            clonedEl.style.removeProperty('backdrop-filter')
+          }
         }
       })
       
@@ -189,10 +202,35 @@ export const Scene5Export: React.FC = () => {
         const htmlEl = el as HTMLElement
         const computed = window.getComputedStyle(htmlEl)
         
-        // Remove ALL filters from images to prevent whitish tint
+        // Remove ALL filters from images AND their parent motion.div wrappers to prevent whitish tint
         if (htmlEl.tagName === 'IMG') {
           htmlEl.style.filter = 'none'
           htmlEl.style.removeProperty('filter')
+          
+          // Also remove filters from parent motion.div if it exists
+          let parent = htmlEl.parentElement
+          while (parent && parent !== clonedFrame) {
+            const parentComputed = window.getComputedStyle(parent)
+            if (parentComputed.filter && parentComputed.filter !== 'none') {
+              (parent as HTMLElement).style.filter = 'none'
+              ;(parent as HTMLElement).style.removeProperty('filter')
+            }
+            // Check if parent has any transform that might affect rendering
+            if (parentComputed.transform && parentComputed.transform !== 'none') {
+              // Keep transform but ensure no filter is applied
+              ;(parent as HTMLElement).style.filter = 'none'
+            }
+            parent = parent.parentElement
+          }
+        }
+        
+        // Remove filters from ALL divs (including motion.div wrappers)
+        if (htmlEl.tagName === 'DIV') {
+          const computedFilter = computed.filter
+          if (computedFilter && computedFilter !== 'none') {
+            htmlEl.style.filter = 'none'
+            htmlEl.style.removeProperty('filter')
+          }
         }
         
         // CRITICAL: Remove any white/light overlays that might be on top of the image
@@ -257,19 +295,29 @@ export const Scene5Export: React.FC = () => {
         }
         
         // Remove any motion.div wrappers that framer-motion might have added
-        if (htmlEl.classList.contains('framer-motion') || 
-            htmlEl.getAttribute('data-framer-name') ||
-            (htmlEl.tagName === 'DIV' && htmlEl.children.length === 1 && htmlEl.querySelector('img'))) {
-          // Check if this wrapper has a background that might show
+        // Also check for any div that wraps an image
+        if (htmlEl.tagName === 'DIV' && htmlEl.querySelector('img')) {
+          // This is likely a wrapper around the image
           const wrapperBg = computed.backgroundColor
           const wrapperRgbMatch = wrapperBg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
           if (wrapperRgbMatch) {
             const r = parseInt(wrapperRgbMatch[1])
             const g = parseInt(wrapperRgbMatch[2])
             const b = parseInt(wrapperRgbMatch[3])
-            if (r > 240 && g > 240 && b > 240) {
+            // If it has any light background, make it transparent
+            if (r > 200 && g > 200 && b > 200) {
               htmlEl.style.backgroundColor = 'transparent'
             }
+          }
+          // Also ensure no filter is on the wrapper
+          if (computed.filter && computed.filter !== 'none') {
+            htmlEl.style.filter = 'none'
+            htmlEl.style.removeProperty('filter')
+          }
+          // Remove any backdrop-filter
+          if (computed.backdropFilter && computed.backdropFilter !== 'none') {
+            htmlEl.style.backdropFilter = 'none'
+            htmlEl.style.removeProperty('backdrop-filter')
           }
         }
         
@@ -404,6 +452,48 @@ export const Scene5Export: React.FC = () => {
         clonedFrame.style.setProperty('background-color', '#F5F1E8', 'important')
       }
       
+      // FINAL CHECK: Remove any remaining filters or white backgrounds from image and its containers
+      const finalImages = clonedFrame.querySelectorAll('img')
+      finalImages.forEach((img) => {
+        const imgEl = img as HTMLElement
+        // Ensure image has no filter
+        imgEl.style.filter = 'none'
+        imgEl.style.removeProperty('filter')
+        
+        // Traverse all parents and ensure no white backgrounds or filters
+        let parent = imgEl.parentElement
+        while (parent && parent !== clonedFrame) {
+          const parentEl = parent as HTMLElement
+          const parentComputed = window.getComputedStyle(parentEl)
+          
+          // Remove filters
+          if (parentComputed.filter && parentComputed.filter !== 'none') {
+            parentEl.style.filter = 'none'
+            parentEl.style.removeProperty('filter')
+          }
+          
+          // Remove backdrop-filter
+          if (parentComputed.backdropFilter && parentComputed.backdropFilter !== 'none') {
+            parentEl.style.backdropFilter = 'none'
+            parentEl.style.removeProperty('backdrop-filter')
+          }
+          
+          // Check for white/light backgrounds on parent containers
+          const parentBg = parentComputed.backgroundColor
+          const parentRgbMatch = parentBg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+          if (parentRgbMatch) {
+            const r = parseInt(parentRgbMatch[1])
+            const g = parseInt(parentRgbMatch[2])
+            const b = parseInt(parentRgbMatch[3])
+            if (r > 240 && g > 240 && b > 240) {
+              parentEl.style.backgroundColor = 'transparent'
+            }
+          }
+          
+          parent = parent.parentElement
+        }
+      })
+      
       // Make container visible to html2canvas (it's behind everything with z-index -1)
       exportContainer.style.visibility = 'visible'
       
@@ -413,7 +503,7 @@ export const Scene5Export: React.FC = () => {
       
       // Hide it again immediately after capture
       exportContainer.style.visibility = 'hidden'
-      
+
       // Download
       setExportProgress(100)
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
@@ -480,7 +570,7 @@ export const Scene5Export: React.FC = () => {
 
             {/* Magic effects - disabled */}
           </Frame>
-          
+
           {/* Loading overlay on frame */}
           {isExporting && (
             <motion.div

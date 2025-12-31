@@ -33,11 +33,19 @@ export const useExport = () => {
           const allElements = clonedDoc.querySelectorAll('*')
           allElements.forEach((clonedEl) => {
             const htmlEl = clonedEl as HTMLElement
+            const computed = window.getComputedStyle(htmlEl)
             
-            // Remove ALL filters from images to prevent whitish tint
-            if (htmlEl.tagName === 'IMG') {
-              htmlEl.style.filter = 'none'
-              htmlEl.style.removeProperty('filter')
+            // Remove ALL filters from images AND all divs (including motion.div wrappers) to prevent whitish tint
+            if (htmlEl.tagName === 'IMG' || htmlEl.tagName === 'DIV') {
+              if (computed.filter && computed.filter !== 'none') {
+                htmlEl.style.filter = 'none'
+                htmlEl.style.removeProperty('filter')
+              }
+              // Also remove backdrop-filter
+              if (computed.backdropFilter && computed.backdropFilter !== 'none') {
+                htmlEl.style.backdropFilter = 'none'
+                htmlEl.style.removeProperty('backdrop-filter')
+              }
             }
             
             // Set background color for paper elements - use cssText for maximum override
