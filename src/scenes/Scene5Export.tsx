@@ -73,11 +73,11 @@ export const Scene5Export: React.FC = () => {
       const exportContainer = document.createElement('div')
       exportContainer.id = 'export-container'
       exportContainer.style.position = 'fixed'
-      exportContainer.style.left = '-99999px' // Far off-screen but still in DOM
+      exportContainer.style.left = '0'
       exportContainer.style.top = '0'
-      exportContainer.style.opacity = '0'
+      exportContainer.style.zIndex = '-1'
+      exportContainer.style.visibility = 'hidden' // Hidden but still rendered for html2canvas
       exportContainer.style.pointerEvents = 'none'
-      exportContainer.style.zIndex = '-9999'
       exportContainer.style.width = `${frameElement.offsetWidth}px`
       exportContainer.style.height = `${frameElement.offsetHeight}px`
       exportContainer.style.backgroundColor = '#F5F1E8'
@@ -279,10 +279,15 @@ export const Scene5Export: React.FC = () => {
         clonedFrame.style.setProperty('background-color', '#F5F1E8', 'important')
       }
       
-      // Keep container hidden with display: none - html2canvas works on cloned document
+      // Make container visible to html2canvas (it's behind everything with z-index -1)
+      exportContainer.style.visibility = 'visible'
+      
       // Export with proper options
       setExportProgress(85)
       const dataUrl = await exportToImage('export-container')
+      
+      // Hide it again immediately after capture
+      exportContainer.style.visibility = 'hidden'
       
       // Download
       setExportProgress(100)
