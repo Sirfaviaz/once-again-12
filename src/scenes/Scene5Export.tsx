@@ -10,7 +10,6 @@ import { LightLeak } from '../components/LightLeak'
 import { useExport } from '../hooks/useExport'
 import { fadeIn, checkmarkDraw, scaleIn } from '../utils/animations'
 import { Confetti } from '../components/Confetti'
-import { generateQRCode } from '../utils/qrcodeHelper'
 
 const nostalgicQuotes = [
   "Capturing moments, one memory at a time...",
@@ -26,7 +25,6 @@ export const Scene5Export: React.FC = () => {
   const [isSuccess, setIsSuccess] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
   const [currentQuote, setCurrentQuote] = useState(0)
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
   const [exportProgress, setExportProgress] = useState(0)
   const frameRef = useRef<HTMLDivElement>(null)
 
@@ -282,16 +280,6 @@ export const Scene5Export: React.FC = () => {
       setExportProgress(85)
       const dataUrl = await exportToImage('export-container')
       
-      // Generate QR code in parallel with download prep
-      setExportProgress(92)
-      const [qrDataUrl] = await Promise.all([
-        generateQRCode(dataUrl).catch(() => null),
-        new Promise((resolve) => setTimeout(resolve, 100)) // Small delay for smooth progress
-      ])
-      if (qrDataUrl) {
-        setQrCodeUrl(qrDataUrl)
-      }
-
       // Download
       setExportProgress(100)
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
@@ -326,7 +314,6 @@ export const Scene5Export: React.FC = () => {
     setIsSuccess(false)
     setShowConfetti(false)
     setExportProgress(0)
-    setQrCodeUrl(null)
     setCurrentQuote(0)
     // Then reset the app state and navigate to intro
     reset()
@@ -489,25 +476,6 @@ export const Scene5Export: React.FC = () => {
               >
                 Memory saved.
               </motion.p>
-
-              {/* QR Code - only show if generated successfully */}
-              {qrCodeUrl && (
-                <motion.div
-                  className="mb-6"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <img
-                    src={qrCodeUrl}
-                    alt="QR Code"
-                    className="mx-auto bg-white p-4 rounded-lg shadow-lg"
-                  />
-                  <p className="text-warm-brown-light text-sm mt-2">
-                    Scan to view your memory
-                  </p>
-                </motion.div>
-              )}
 
               <motion.button
                 onClick={handleStartOver}
