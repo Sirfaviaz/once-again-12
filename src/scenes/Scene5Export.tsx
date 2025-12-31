@@ -20,7 +20,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, magicToggles, reset } = useApp()
+  const { photo, magicToggles, reset, setCurrentScene } = useApp()
   const { exportToImage, downloadImage } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -319,7 +319,17 @@ export const Scene5Export: React.FC = () => {
   }
 
   const handleStartOver = () => {
+    // Reset all export states first
+    setIsExporting(false)
+    setIsSuccess(false)
+    setShowConfetti(false)
+    setExportProgress(0)
+    setQrCodeUrl(null)
+    setCurrentQuote(0)
+    // Then reset the app state and navigate to intro
     reset()
+    // Ensure we're on intro scene
+    setCurrentScene('intro')
   }
 
   if (!photo) {
