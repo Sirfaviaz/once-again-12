@@ -34,3 +34,4 @@ export const generateQRCode = async (data: string): Promise<string | null> => {
 
 
 
+
