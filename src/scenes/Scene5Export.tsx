@@ -15,7 +15,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, frameSettings, setCurrentScene, setPhoto } = useApp()
+  const { photo, frameSettings } = useApp()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -44,10 +44,14 @@ export const Scene5Export: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once on mount
 
-  const handleRetake = () => {
-    setPhoto(null)
-    setCurrentScene('upload')
-  }
+  // Auto-scroll to bottom when saved
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
+      }, 50)
+    }
+  }, [isSuccess])
 
   const handleExport = async () => {
     if (!frameRef.current) {
@@ -291,15 +295,6 @@ export const Scene5Export: React.FC = () => {
       <Confetti trigger={showConfetti} />
 
       <div className="relative z-10 w-full max-w-4xl mx-auto">
-        <div className="flex justify-end mb-4">
-          <button
-            onClick={handleRetake}
-            className="px-4 py-2 rounded-full bg-warm-brown-light/30 text-warm-gold-DEFAULT font-semibold shadow-md hover:bg-warm-brown-light/50 transition-colors export-hide"
-          >
-            Retake photo
-          </button>
-        </div>
-
         {/* Frame */}
         <motion.div
           ref={frameRef}
