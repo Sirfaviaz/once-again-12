@@ -120,13 +120,15 @@ export const Scene5Export: React.FC = () => {
         id="export-capture"
         style={{
           position: 'fixed',
-          left: '-9999px',
+          left: '-20000px',
           top: 0,
           width: '1200px',
-          backgroundColor: 'transparent',
+          backgroundColor: '#F5F1E8',
           padding: '24px',
           boxSizing: 'border-box',
-          zIndex: -1,
+          zIndex: 0,
+          opacity: 1,
+          visibility: 'visible',
         }}
       >
         <style>
