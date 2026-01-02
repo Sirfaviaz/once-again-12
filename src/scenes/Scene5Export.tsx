@@ -47,7 +47,11 @@ export const Scene5Export: React.FC = () => {
   }, []) // Only run once on mount
 
   const handleExport = async () => {
-    if (!frameRef.current) return
+    if (!frameRef.current) {
+      console.error('[export] frameRef missing')
+      alert('Export failed: frame not ready')
+      return
+    }
 
     setIsExporting(true)
     setExportProgress(0)
@@ -63,10 +67,63 @@ export const Scene5Export: React.FC = () => {
     const exportHideElements = frameElement.querySelectorAll('.export-hide')
     exportHideElements.forEach((el) => ((el as HTMLElement).style.display = 'none'))
 
+    let prevStyle: { width: string; height: string; minHeight: string } | null = null
+
     try {
+      // Debug info: capture state
+      const frameRect = frameElement.getBoundingClientRect()
+      console.warn('[export] frame rect', {
+        width: frameRect.width,
+        height: frameRect.height,
+        bg: getComputedStyle(frameElement).backgroundColor,
+      })
+
+      // Ensure all images inside the frame are loaded
+      const imgs = Array.from(frameElement.querySelectorAll('img'))
+      if (imgs.length === 0) {
+        console.error('[export] no images found inside memory-frame')
+      } else {
+        imgs.forEach((img, idx) => {
+          console.warn('[export] img', idx, {
+            complete: img.complete,
+            naturalWidth: img.naturalWidth,
+            naturalHeight: img.naturalHeight,
+            srcPreview: img.src?.slice(0, 120),
+          })
+        })
+      }
+      await Promise.all(
+        imgs.map(
+          (img) =>
+            new Promise((resolve) => {
+              if (img.complete && img.naturalWidth > 0) return resolve(null)
+              img.onload = () => resolve(null)
+              img.onerror = () => resolve(null)
+            })
+        )
+      )
+
+      // Guard against zero-sized captures by enforcing a temporary size if needed
+      const rect = frameElement.getBoundingClientRect()
+      const needsSize = rect.width < 10 || rect.height < 10
+      prevStyle = needsSize
+        ? {
+            width: frameElement.style.width,
+            height: frameElement.style.height,
+            minHeight: frameElement.style.minHeight,
+          }
+        : null
+      if (needsSize) {
+        frameElement.style.width = '1200px'
+        frameElement.style.height = '1600px'
+        frameElement.style.minHeight = '1600px'
+      }
+      frameElement.style.backgroundColor = '#F5F1E8'
+
       setExportProgress(70)
       // Capture exactly as shown; no cloning or style rewriting
       const dataUrl = await exportToImage('memory-frame', 'image/jpeg')
+      console.warn('[export] dataUrl length', dataUrl.length, 'prefix', dataUrl.slice(0, 40))
 
       setExportProgress(100)
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
@@ -85,6 +142,12 @@ export const Scene5Export: React.FC = () => {
       setExportProgress(0)
       alert('Failed to export image. Please try again.')
     } finally {
+      // Restore any temporary sizing
+      if (frameElement && prevStyle) {
+        frameElement.style.width = prevStyle.width
+        frameElement.style.height = prevStyle.height
+        frameElement.style.minHeight = prevStyle.minHeight
+      }
       // Restore export-only UI
       exportHideElements.forEach((el) => ((el as HTMLElement).style.display = ''))
     }
