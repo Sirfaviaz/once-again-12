@@ -42,11 +42,11 @@ export const Scene3FrameExperience: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          <motion.button
+        <motion.button
             onClick={() => setCurrentScene('export')}
             className="relative px-12 py-4 bg-warm-gold-DEFAULT text-warm-burgundy-DEFAULT font-bold text-xl rounded-full shadow-2xl min-h-[44px] overflow-hidden group"
             whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.95 }}
             initial={{ scale: 0.9 }}
             animate={{ 
               scale: [1, 1.05, 1],
@@ -69,7 +69,7 @@ export const Scene3FrameExperience: React.FC = () => {
               },
             }}
             aria-label="Create your memory"
-          >
+        >
             {/* Animated background glow */}
             <motion.div
               className="absolute inset-0 bg-warm-gold-light rounded-full opacity-0 group-hover:opacity-50 blur-xl"
@@ -100,7 +100,7 @@ export const Scene3FrameExperience: React.FC = () => {
             
             {/* Button text */}
             <span className="relative z-10">Create Memory</span>
-          </motion.button>
+        </motion.button>
         </motion.div>
       </div>
     </motion.div>

@@ -76,6 +76,7 @@ export const Frame: React.FC<FrameProps> = ({ children, className = '' }) => {
           boxSizing: 'border-box',
           position: 'relative',
           backgroundColor: 'transparent',
+          zIndex: 1, // keep base layer below photo content
         }}
       >
         {React.Children.map(children, (child) => {

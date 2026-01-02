@@ -159,6 +159,7 @@ export const PhotoEditor: React.FC = () => {
         overflow: 'hidden',
         boxSizing: 'border-box',
         backgroundColor: 'transparent',
+        zIndex: 10, // keep photo on top of other layers to avoid tint overlays
       }}
     >
       <motion.div
@@ -180,6 +181,8 @@ export const PhotoEditor: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          position: 'relative',
+          zIndex: 10,
         }}
         animate={{
           x: frameSettings.photoX,
