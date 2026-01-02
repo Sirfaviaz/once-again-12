@@ -16,7 +16,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, frameSettings } = useApp()
+  const { photo } = useApp()
   const { exportToImage, downloadImage } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -55,6 +55,13 @@ export const Scene5Export: React.FC = () => {
     setExportProgress(0)
 
     try {
+      // Hide export-only UI inside the export container
+      const exportHideEls = Array.from(exportElement.querySelectorAll('.export-hide')) as HTMLElement[]
+      exportHideEls.forEach((el) => {
+        el.dataset.prevDisplay = el.style.display
+        el.style.display = 'none'
+      })
+
       // Ensure export image is loaded
       const exportImg = exportElement.querySelector('img')
       if (exportImg && !exportImg.complete) {
@@ -70,7 +77,7 @@ export const Scene5Export: React.FC = () => {
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
       downloadImage(dataUrl, `once-again-12-${timestamp}.png`)
-
+      
       await new Promise((resolve) => setTimeout(resolve, 150))
 
       setIsExporting(false)
@@ -82,6 +89,13 @@ export const Scene5Export: React.FC = () => {
       setIsExporting(false)
       setExportProgress(0)
       alert('Failed to export image. Please try again.')
+    } finally {
+      // Restore export-hide visibility
+      const exportHideEls = Array.from(exportElement.querySelectorAll('.export-hide')) as HTMLElement[]
+      exportHideEls.forEach((el) => {
+        el.style.display = el.dataset.prevDisplay || ''
+        delete (el as any).dataset.prevDisplay
+      })
     }
   }
 
@@ -101,7 +115,7 @@ export const Scene5Export: React.FC = () => {
       animate="visible"
       variants={fadeIn}
     >
-      {/* Dedicated off-screen export container to capture exactly what we show */}
+      {/* Dedicated off-screen export container that renders the actual Frame */}
       <div
         id="export-capture"
         style={{
@@ -109,58 +123,21 @@ export const Scene5Export: React.FC = () => {
           left: '-9999px',
           top: 0,
           width: '1200px',
-          minHeight: '1600px',
-          backgroundColor: '#F5F1E8',
-          color: '#2D1B1E',
-          padding: '48px 48px 32px',
+          backgroundColor: 'transparent',
+          padding: '24px',
           boxSizing: 'border-box',
-          fontFamily: "'Playfair Display', serif",
           zIndex: -1,
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '24px', color: '#2D1B1E' }}>
-          <h1 style={{ margin: 0, fontSize: '48px', fontWeight: 700, color: '#2D1B1E' }}>Once Again '12</h1>
-          <p style={{ margin: '6px 0 0', fontSize: '20px', fontStyle: 'italic', color: '#8B6F47' }}>
-            Where memories meet the present
-          </p>
-        </div>
-
-        <div
-          style={{
-            width: '100%',
-            minHeight: '800px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'transparent',
-            marginBottom: '32px',
-            overflow: 'hidden',
-          }}
-        >
-          {photo && (
-            <img
-              src={photo}
-              alt="Memory"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '100%',
-                objectFit: 'contain',
-                display: 'block',
-                backgroundColor: 'transparent',
-              }}
-            />
-          )}
-        </div>
-
-        {frameSettings.text && frameSettings.text.trim().length > 0 && (
-          <div style={{ textAlign: 'center', marginTop: '12px' }}>
-            <p style={{ margin: '4px 0', fontSize: '20px', fontWeight: 600 }}>Once Again '12</p>
-            <p style={{ margin: '0 0 6px', fontSize: '16px' }}>ICS Ottapalam</p>
-            <p style={{ margin: 0, fontSize: '15px', fontStyle: 'italic', color: '#8B6F47' }}>
-              {frameSettings.text}
-            </p>
-          </div>
-        )}
+        <style>
+          {`
+            #export-capture .export-hide { display: none !important; }
+          `}
+        </style>
+        <Frame>
+          <PhotoEditor />
+          <TextEditor />
+        </Frame>
       </div>
 
       {/* Background */}
