@@ -165,16 +165,16 @@ export const Scene5Export: React.FC = () => {
       ctx.fillStyle = '#F5F1E8'
       ctx.fillRect(0, 0, frameCanvas.width, frameCanvas.height)
 
-      // Header
-      ctx.fillStyle = '#2D1B1E'
-      setFont(48, 700)
+      // Header (match preview dusty/gold tone)
+      ctx.fillStyle = '#8B6F47'
+      setFont(56, 700)
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
       ctx.fillText("Once Again '12", (targetWidth * scale) / 2, 48 * scale)
 
       ctx.fillStyle = '#8B6F47'
-      setFont(20, 400, true)
-      ctx.fillText('Where memories meet the present', (targetWidth * scale) / 2, 102 * scale)
+      setFont(22, 400, true)
+      ctx.fillText('Where memories meet the present', (targetWidth * scale) / 2, 114 * scale)
 
       // Image area
       const imageArea = {
@@ -207,20 +207,27 @@ export const Scene5Export: React.FC = () => {
       }
 
       // Footer
-      ctx.fillStyle = '#2D1B1E'
-      setFont(20, 600)
-      ctx.fillText("Once Again '12", (targetWidth * scale) / 2, (targetHeight - 220) * scale)
-
-      ctx.fillStyle = '#8B6F47'
-      setFont(16, 400)
-      ctx.fillText('ICS Ottapalam', (targetWidth * scale) / 2, (targetHeight - 180) * scale)
+      const footerBaseY = (targetHeight - 240) * scale
+      const footerLineGap = 30 * scale
 
       const footerText = frameSettings.text && frameSettings.text.trim().length > 0 ? frameSettings.text : ''
       if (footerText) {
-        ctx.fillStyle = '#8B6F47'
-        setFont(16, 400, true)
-        wrapAndDrawText(ctx, footerText, (targetWidth * scale) / 2, (targetHeight - 140) * scale, targetWidth * 0.8 * scale)
+        ctx.fillStyle = '#2D1B1E'
+        setFont(18, 500, true)
+        wrapAndDrawText(ctx, footerText, (targetWidth * scale) / 2, footerBaseY, targetWidth * 0.8 * scale, 28 * scale)
       }
+
+      ctx.fillStyle = '#8B6F47'
+      setFont(22, 700)
+      ctx.fillText("Once Again '12", (targetWidth * scale) / 2, (footerBaseY + footerLineGap) )
+
+      ctx.fillStyle = '#8B6F47'
+      setFont(18, 500)
+      ctx.fillText('ICS Ottapalam', (targetWidth * scale) / 2, (footerBaseY + footerLineGap + 32 * scale))
+
+      ctx.fillStyle = '#8B6F47'
+      setFont(18, 500, true)
+      ctx.fillText('Meet up on 5th jan 2026', (targetWidth * scale) / 2, (footerBaseY + footerLineGap + 32 * scale + 30 * scale))
 
       const dataUrl = frameCanvas.toDataURL('image/jpeg', 1)
       console.warn('[export] dataUrl length', dataUrl.length, 'prefix', dataUrl.slice(0, 40))
