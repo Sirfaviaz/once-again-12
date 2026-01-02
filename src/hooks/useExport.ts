@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import html2canvas from 'html2canvas'
 
 export const useExport = () => {
-  const exportToImage = useCallback(async (elementId: string): Promise<string> => {
+  const exportToImage = useCallback(async (elementId: string, type: 'image/png' | 'image/jpeg' = 'image/png'): Promise<string> => {
     const element = document.getElementById(elementId)
     if (!element) {
       throw new Error('Element not found')
@@ -84,7 +84,7 @@ export const useExport = () => {
       },
     })
 
-    return canvas.toDataURL('image/png')
+    return canvas.toDataURL(type, type === 'image/jpeg' ? 1 : undefined)
   }, [])
 
   const downloadImage = useCallback((dataUrl: string, filename: string) => {

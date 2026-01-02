@@ -65,7 +65,7 @@ export const Scene5Export: React.FC = () => {
       }
 
       setExportProgress(70)
-      const dataUrl = await exportToImage('export-capture')
+      const dataUrl = await exportToImage('export-capture', 'image/jpeg')
       setExportProgress(100)
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
@@ -109,7 +109,7 @@ export const Scene5Export: React.FC = () => {
           left: '-9999px',
           top: 0,
           width: '1200px',
-          height: '1600px',
+          minHeight: '1600px',
           backgroundColor: '#F5F1E8',
           color: '#2D1B1E',
           padding: '48px 48px 32px',
@@ -118,8 +118,8 @@ export const Scene5Export: React.FC = () => {
           zIndex: -1,
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <h1 style={{ margin: 0, fontSize: '48px', fontWeight: 700 }}>Once Again '12</h1>
+        <div style={{ textAlign: 'center', marginBottom: '24px', color: '#2D1B1E' }}>
+          <h1 style={{ margin: 0, fontSize: '48px', fontWeight: 700, color: '#2D1B1E' }}>Once Again '12</h1>
           <p style={{ margin: '6px 0 0', fontSize: '20px', fontStyle: 'italic', color: '#8B6F47' }}>
             Where memories meet the present
           </p>
@@ -128,12 +128,12 @@ export const Scene5Export: React.FC = () => {
         <div
           style={{
             width: '100%',
-            minHeight: '600px',
+            minHeight: '800px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: 'transparent',
-            marginBottom: '28px',
+            marginBottom: '32px',
             overflow: 'hidden',
           }}
         >
