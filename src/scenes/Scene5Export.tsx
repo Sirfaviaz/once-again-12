@@ -16,7 +16,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo } = useApp()
+  const { photo, frameSettings } = useApp()
   const { exportToImage, downloadImage } = useExport()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -47,32 +47,30 @@ export const Scene5Export: React.FC = () => {
   }, []) // Only run once on mount
 
   const handleExport = async () => {
-    if (!frameRef.current) return
+    if (!photo) return
+    const exportElement = document.getElementById('export-capture') as HTMLElement | null
+    if (!exportElement) return
 
     setIsExporting(true)
     setExportProgress(0)
 
-    // Use the live frame element directly to capture exactly what the user sees
-    const frameElement = frameRef.current.querySelector('#memory-frame') as HTMLElement
-    if (!frameElement) {
-      setIsExporting(false)
-      return
-    }
-
-    // Hide export-only UI
-    const exportHideElements = frameElement.querySelectorAll('.export-hide')
-    exportHideElements.forEach((el) => ((el as HTMLElement).style.display = 'none'))
-
     try {
-      setExportProgress(70)
-      // Capture exactly as shown; no cloning or style rewriting
-      const dataUrl = await exportToImage('memory-frame')
+      // Ensure export image is loaded
+      const exportImg = exportElement.querySelector('img')
+      if (exportImg && !exportImg.complete) {
+        await new Promise((resolve) => {
+          exportImg.onload = () => resolve(null)
+          exportImg.onerror = () => resolve(null)
+        })
+      }
 
+      setExportProgress(70)
+      const dataUrl = await exportToImage('export-capture')
       setExportProgress(100)
+
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
       downloadImage(dataUrl, `once-again-12-${timestamp}.png`)
 
-      // Small delay to show 100% before hiding
       await new Promise((resolve) => setTimeout(resolve, 150))
 
       setIsExporting(false)
@@ -84,9 +82,6 @@ export const Scene5Export: React.FC = () => {
       setIsExporting(false)
       setExportProgress(0)
       alert('Failed to export image. Please try again.')
-    } finally {
-      // Restore export-only UI
-      exportHideElements.forEach((el) => ((el as HTMLElement).style.display = ''))
     }
   }
 
@@ -106,6 +101,68 @@ export const Scene5Export: React.FC = () => {
       animate="visible"
       variants={fadeIn}
     >
+      {/* Dedicated off-screen export container to capture exactly what we show */}
+      <div
+        id="export-capture"
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: 0,
+          width: '1200px',
+          height: '1600px',
+          backgroundColor: '#F5F1E8',
+          color: '#2D1B1E',
+          padding: '48px 48px 32px',
+          boxSizing: 'border-box',
+          fontFamily: "'Playfair Display', serif",
+          zIndex: -1,
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <h1 style={{ margin: 0, fontSize: '48px', fontWeight: 700 }}>Once Again '12</h1>
+          <p style={{ margin: '6px 0 0', fontSize: '20px', fontStyle: 'italic', color: '#8B6F47' }}>
+            Where memories meet the present
+          </p>
+        </div>
+
+        <div
+          style={{
+            width: '100%',
+            minHeight: '600px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'transparent',
+            marginBottom: '28px',
+            overflow: 'hidden',
+          }}
+        >
+          {photo && (
+            <img
+              src={photo}
+              alt="Memory"
+              style={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                display: 'block',
+                backgroundColor: 'transparent',
+              }}
+            />
+          )}
+        </div>
+
+        {frameSettings.text && frameSettings.text.trim().length > 0 && (
+          <div style={{ textAlign: 'center', marginTop: '12px' }}>
+            <p style={{ margin: '4px 0', fontSize: '20px', fontWeight: 600 }}>Once Again '12</p>
+            <p style={{ margin: '0 0 6px', fontSize: '16px' }}>ICS Ottapalam</p>
+            <p style={{ margin: 0, fontSize: '15px', fontStyle: 'italic', color: '#8B6F47' }}>
+              {frameSettings.text}
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-warm-burgundy-dark via-warm-burgundy-DEFAULT to-warm-brown-dark" />
 
