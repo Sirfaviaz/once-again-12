@@ -4,7 +4,6 @@ import { useApp } from '../context/AppContext'
 import { Frame } from '../components/Frame'
 import { PhotoEditor } from '../components/PhotoEditor'
 import { TextEditor } from '../components/TextEditor'
-import { useExport } from '../hooks/useExport'
 import { fadeIn, checkmarkDraw, scaleIn } from '../utils/animations'
 import { Confetti } from '../components/Confetti'
 
@@ -16,8 +15,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo } = useApp()
-  const { exportToImage, downloadImage } = useExport()
+  const { photo, frameSettings } = useApp()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -57,14 +55,14 @@ export const Scene5Export: React.FC = () => {
     setExportProgress(0)
 
     // Use the live frame element directly to capture exactly what the user sees
-    const frameElement = frameRef.current.querySelector('#memory-frame') as HTMLElement
-    if (!frameElement) {
+      const frameElement = frameRef.current.querySelector('#memory-frame') as HTMLElement
+      if (!frameElement) {
       setIsExporting(false)
       return
-    }
+      }
 
     // Hide export-only UI
-    const exportHideElements = frameElement.querySelectorAll('.export-hide')
+      const exportHideElements = frameElement.querySelectorAll('.export-hide')
     exportHideElements.forEach((el) => ((el as HTMLElement).style.display = 'none'))
 
     let prevStyle: { width: string; height: string; minHeight: string } | null = null
@@ -122,13 +120,118 @@ export const Scene5Export: React.FC = () => {
 
       setExportProgress(70)
       // Capture exactly as shown; no cloning or style rewriting
-      const dataUrl = await exportToImage('memory-frame', 'image/jpeg')
+      const frameCanvas = document.createElement('canvas')
+      const scale = 2
+      const targetWidth = 1200
+      const targetHeight = 1600
+      frameCanvas.width = targetWidth * scale
+      frameCanvas.height = targetHeight * scale
+      const ctx = frameCanvas.getContext('2d')
+      if (!ctx) throw new Error('Canvas 2D not supported')
+
+      // Helper to set font
+      const setFont = (sizePx: number, weight = 400, italic = false) => {
+        ctx.font = `${italic ? 'italic ' : ''}${weight} ${sizePx * scale}px 'Playfair Display', serif`
+      }
+
+      const wrapAndDrawText = (
+        context: CanvasRenderingContext2D,
+        text: string,
+        x: number,
+        y: number,
+        maxWidth: number,
+        lineHeight = 24 * scale
+      ) => {
+        const words = text.split(' ')
+        let line = ''
+        let cursorY = y
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' '
+          const metrics = context.measureText(testLine)
+          if (metrics.width > maxWidth && n > 0) {
+            context.fillText(line.trim(), x, cursorY)
+            line = words[n] + ' '
+            cursorY += lineHeight
+          } else {
+            line = testLine
+          }
+        }
+        if (line.trim().length > 0) {
+          context.fillText(line.trim(), x, cursorY)
+        }
+      }
+
+      // Fill background
+      ctx.fillStyle = '#F5F1E8'
+      ctx.fillRect(0, 0, frameCanvas.width, frameCanvas.height)
+
+      // Header
+      ctx.fillStyle = '#2D1B1E'
+      setFont(48, 700)
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'top'
+      ctx.fillText("Once Again '12", (targetWidth * scale) / 2, 48 * scale)
+
+      ctx.fillStyle = '#8B6F47'
+      setFont(20, 400, true)
+      ctx.fillText('Where memories meet the present', (targetWidth * scale) / 2, 102 * scale)
+
+      // Image area
+      const imageArea = {
+        x: 80 * scale,
+        y: 150 * scale,
+        width: (targetWidth - 160) * scale,
+        height: (targetHeight - 400) * scale,
+      }
+
+      const imgEl = imgs[0]
+      if (imgEl) {
+        const img = new Image()
+        img.src = imgEl.src
+        await new Promise((resolve) => {
+          if (img.complete && img.naturalWidth > 0) return resolve(null)
+          img.onload = () => resolve(null)
+          img.onerror = () => resolve(null)
+        })
+
+        const iw = img.naturalWidth
+        const ih = img.naturalHeight
+        if (iw > 0 && ih > 0) {
+          const scaleFit = Math.min(imageArea.width / iw, imageArea.height / ih)
+          const drawW = iw * scaleFit
+          const drawH = ih * scaleFit
+          const dx = imageArea.x + (imageArea.width - drawW) / 2
+          const dy = imageArea.y + (imageArea.height - drawH) / 2
+          ctx.drawImage(img, dx, dy, drawW, drawH)
+        }
+      }
+
+      // Footer
+      ctx.fillStyle = '#2D1B1E'
+      setFont(20, 600)
+      ctx.fillText("Once Again '12", (targetWidth * scale) / 2, (targetHeight - 220) * scale)
+
+      ctx.fillStyle = '#8B6F47'
+      setFont(16, 400)
+      ctx.fillText('ICS Ottapalam', (targetWidth * scale) / 2, (targetHeight - 180) * scale)
+
+      const footerText = frameSettings.text && frameSettings.text.trim().length > 0 ? frameSettings.text : ''
+      if (footerText) {
+        ctx.fillStyle = '#8B6F47'
+        setFont(16, 400, true)
+        wrapAndDrawText(ctx, footerText, (targetWidth * scale) / 2, (targetHeight - 140) * scale, targetWidth * 0.8 * scale)
+      }
+
+      const dataUrl = frameCanvas.toDataURL('image/jpeg', 1)
       console.warn('[export] dataUrl length', dataUrl.length, 'prefix', dataUrl.slice(0, 40))
 
       setExportProgress(100)
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      downloadImage(dataUrl, `once-again-12-${timestamp}.jpg`)
-
+      const link = document.createElement('a')
+      link.download = `once-again-12-${timestamp}.jpg`
+      link.href = dataUrl
+      link.click()
+      
       // Small delay to show 100% before hiding
       await new Promise((resolve) => setTimeout(resolve, 150))
 
