@@ -47,37 +47,32 @@ export const Scene5Export: React.FC = () => {
   }, []) // Only run once on mount
 
   const handleExport = async () => {
-    if (!photo) return
-    const exportElement = document.getElementById('export-capture') as HTMLElement | null
-    if (!exportElement) return
+    if (!frameRef.current) return
 
     setIsExporting(true)
     setExportProgress(0)
 
+    // Use the live frame element directly to capture exactly what the user sees
+    const frameElement = frameRef.current.querySelector('#memory-frame') as HTMLElement
+    if (!frameElement) {
+      setIsExporting(false)
+      return
+    }
+
+    // Hide export-only UI
+    const exportHideElements = frameElement.querySelectorAll('.export-hide')
+    exportHideElements.forEach((el) => ((el as HTMLElement).style.display = 'none'))
+
     try {
-      // Hide export-only UI inside the export container
-      const exportHideEls = Array.from(exportElement.querySelectorAll('.export-hide')) as HTMLElement[]
-      exportHideEls.forEach((el) => {
-        el.dataset.prevDisplay = el.style.display
-        el.style.display = 'none'
-      })
-
-      // Ensure export image is loaded
-      const exportImg = exportElement.querySelector('img')
-      if (exportImg && !exportImg.complete) {
-        await new Promise((resolve) => {
-          exportImg.onload = () => resolve(null)
-          exportImg.onerror = () => resolve(null)
-        })
-      }
-
       setExportProgress(70)
-      const dataUrl = await exportToImage('export-capture', 'image/jpeg')
-      setExportProgress(100)
+      // Capture exactly as shown; no cloning or style rewriting
+      const dataUrl = await exportToImage('memory-frame', 'image/jpeg')
 
+      setExportProgress(100)
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5)
-      downloadImage(dataUrl, `once-again-12-${timestamp}.png`)
-      
+      downloadImage(dataUrl, `once-again-12-${timestamp}.jpg`)
+
+      // Small delay to show 100% before hiding
       await new Promise((resolve) => setTimeout(resolve, 150))
 
       setIsExporting(false)
@@ -90,12 +85,8 @@ export const Scene5Export: React.FC = () => {
       setExportProgress(0)
       alert('Failed to export image. Please try again.')
     } finally {
-      // Restore export-hide visibility
-      const exportHideEls = Array.from(exportElement.querySelectorAll('.export-hide')) as HTMLElement[]
-      exportHideEls.forEach((el) => {
-        el.style.display = el.dataset.prevDisplay || ''
-        delete (el as any).dataset.prevDisplay
-      })
+      // Restore export-only UI
+      exportHideElements.forEach((el) => ((el as HTMLElement).style.display = ''))
     }
   }
 
@@ -115,33 +106,6 @@ export const Scene5Export: React.FC = () => {
       animate="visible"
       variants={fadeIn}
     >
-      {/* Dedicated off-screen export container that renders the actual Frame */}
-      <div
-        id="export-capture"
-        style={{
-          position: 'fixed',
-          left: '-20000px',
-          top: 0,
-          width: '1200px',
-          backgroundColor: '#F5F1E8',
-          padding: '24px',
-          boxSizing: 'border-box',
-          zIndex: 0,
-          opacity: 1,
-          visibility: 'visible',
-        }}
-      >
-        <style>
-          {`
-            #export-capture .export-hide { display: none !important; }
-          `}
-        </style>
-        <Frame>
-          <PhotoEditor />
-          <TextEditor />
-        </Frame>
-      </div>
-
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-warm-burgundy-dark via-warm-burgundy-DEFAULT to-warm-brown-dark" />
 
