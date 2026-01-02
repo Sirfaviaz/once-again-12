@@ -15,7 +15,7 @@ const nostalgicQuotes = [
 ]
 
 export const Scene5Export: React.FC = () => {
-  const { photo, frameSettings } = useApp()
+  const { photo, frameSettings, setCurrentScene, setPhoto } = useApp()
   const [isExporting, setIsExporting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
@@ -43,6 +43,11 @@ export const Scene5Export: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once on mount
+
+  const handleRetake = () => {
+    setPhoto(null)
+    setCurrentScene('upload')
+  }
 
   const handleExport = async () => {
     if (!frameRef.current) {
@@ -167,14 +172,14 @@ export const Scene5Export: React.FC = () => {
 
       // Header (match preview dusty/gold tone)
       ctx.fillStyle = '#8B6F47'
-      setFont(56, 700)
+      setFont(64, 700)
       ctx.textAlign = 'center'
       ctx.textBaseline = 'top'
       ctx.fillText("Once Again '12", (targetWidth * scale) / 2, 48 * scale)
 
       ctx.fillStyle = '#8B6F47'
-      setFont(22, 400, true)
-      ctx.fillText('Where memories meet the present', (targetWidth * scale) / 2, 114 * scale)
+      setFont(24, 400, true)
+      ctx.fillText('Where memories meet the present', (targetWidth * scale) / 2, 118 * scale)
 
       // Image area
       const imageArea = {
@@ -286,6 +291,15 @@ export const Scene5Export: React.FC = () => {
       <Confetti trigger={showConfetti} />
 
       <div className="relative z-10 w-full max-w-4xl mx-auto">
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handleRetake}
+            className="px-4 py-2 rounded-full bg-warm-brown-light/30 text-warm-gold-DEFAULT font-semibold shadow-md hover:bg-warm-brown-light/50 transition-colors export-hide"
+          >
+            Retake photo
+          </button>
+        </div>
+
         {/* Frame */}
         <motion.div
           ref={frameRef}
