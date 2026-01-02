@@ -22,6 +22,7 @@ export const Scene5Export: React.FC = () => {
   const [currentQuote, setCurrentQuote] = useState(0)
   const [exportProgress, setExportProgress] = useState(0)
   const frameRef = useRef<HTMLDivElement>(null)
+  const successRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isExporting) {
@@ -44,12 +45,16 @@ export const Scene5Export: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only run once on mount
 
-  // Auto-scroll to bottom when saved
+  // Auto-scroll to success section when saved
   useEffect(() => {
     if (isSuccess) {
       setTimeout(() => {
-        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
-      }, 50)
+        if (successRef.current) {
+          successRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        } else {
+          window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' })
+        }
+      }, 100)
     }
   }, [isSuccess])
 
@@ -389,6 +394,7 @@ export const Scene5Export: React.FC = () => {
           {isSuccess && (
             <motion.div
               key="success"
+              ref={successRef}
               className="mt-6 text-center"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
